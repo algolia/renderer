@@ -271,7 +271,23 @@ export class BrowserPage {
       return await promiseWithTimeout(
         (async (): Promise<string | null> => {
           const start = Date.now();
-          const content = await this.#ref?.content();
+          const content = await this.#ref?.evaluate(() => {
+            const doctype = document.doctype
+              ? new XMLSerializer().serializeToString(document.doctype)
+              : '';
+            // https://html.spec.whatwg.org/#dom-parsing-and-serialization
+            if (!('getHTML' in Element.prototype)) {
+              return `${doctype}${document.documentElement.outerHTML}`;
+            }
+            const body = (document.body as any).getHTML({ serializableShadowRoots: true });
+            const uid = crypto.randomUUID();
+            document.body.innerHTML = uid;
+            return `${doctype}${document.documentElement.outerHTML.replace(
+              uid,
+              body
+            )}`;
+          });
+
           stats.timing('renderscript.renderBody', Date.now() - start, {
             browser: this.#engine as string,
           });
