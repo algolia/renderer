@@ -83,7 +83,7 @@
     "hot-shots": "10.0.0",
     "pino": "8.16.2",
     "playwright": "1.37.1",
-    "undici": "5.28.4",
+    "undici": "5.28.5",
     "uuid": "9.0.1"
   },
   "resolutions": {
